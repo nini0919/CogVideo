@@ -233,7 +233,7 @@ class Trainer:
         # For SFT, we train all the parameters in transformer model
         for attr_name, component in vars(self.components).items():
             if hasattr(component, "requires_grad_"):
-                if self.args.training_type == "sft" and attr_name == "transformer":
+                if self.args.training_type in ("sft","dpo") and attr_name == "transformer":
                     component.requires_grad_(True)
                 else:
                     component.requires_grad_(False)

@@ -12,7 +12,7 @@ class Args(BaseModel):
     model_path: Path
     model_name: str
     model_type: Literal["i2v", "t2v"]
-    training_type: Literal["lora", "sft"] = "lora"
+    training_type: Literal["lora", "sft", "dpo"] = "lora"
 
     ########## Output ##########
     output_dir: Path = Path("train_results/{:%Y-%m-%d-%H-%M-%S}".format(datetime.datetime.now()))
@@ -24,8 +24,10 @@ class Args(BaseModel):
     caption_column: Path
     image_column: Path | None = None
     video_column: Path
-
-    ########## Training #########
+    win_video_column: Path
+    lose_video_column: Path
+    
+    ########## Training #########``
     resume_from_checkpoint: Path | None = None
 
     seed: int | None = None
@@ -128,11 +130,11 @@ class Args(BaseModel):
     @field_validator("validation_steps")
     def validate_validation_steps(cls, v: int | None, info: ValidationInfo) -> int | None:
         values = info.data
-        if values.get("do_validation"):
-            if v is None:
-                raise ValueError("validation_steps must be specified when do_validation is True")
-            if values.get("checkpointing_steps") and v % values["checkpointing_steps"] != 0:
-                raise ValueError("validation_steps must be a multiple of checkpointing_steps")
+        # if values.get("do_validation"):
+        #     if v is None:
+        #         raise ValueError("validation_steps must be specified when do_validation is True")
+        #     if values.get("checkpointing_steps") and v % values["checkpointing_steps"] != 0:
+        #         raise ValueError("validation_steps must be a multiple of checkpointing_steps")
         return v
 
     @field_validator("train_resolution")
@@ -182,6 +184,8 @@ class Args(BaseModel):
         parser.add_argument("--data_root", type=str, required=True)
         parser.add_argument("--caption_column", type=str, required=True)
         parser.add_argument("--video_column", type=str, required=True)
+        parser.add_argument("--win_video_column", type=str, required=False)
+        parser.add_argument("--lose_video_column", type=str, required=False)
         parser.add_argument("--train_resolution", type=str, required=True)
         parser.add_argument("--report_to", type=str, required=True)
 

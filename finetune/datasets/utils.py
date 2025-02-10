@@ -26,6 +26,9 @@ def load_videos(video_path: Path) -> List[Path]:
     with open(video_path, "r", encoding="utf-8") as file:
         return [video_path.parent / line.strip() for line in file.readlines() if len(line.strip()) > 0]
 
+# def load_videos(video_path: Path) -> List[Path]:
+    # with open(video_path, "r", encoding="utf-8") as file:
+        # return [video_path.parent / line.strip() for line in file.readlines() if len(line.strip()) > 0]
 
 def load_images(image_path: Path) -> List[Path]:
     with open(image_path, "r", encoding="utf-8") as file:

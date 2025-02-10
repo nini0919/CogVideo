@@ -23,6 +23,6 @@ class Components(BaseModel):
     # Denoiser
     transformer: Any = None
     unet: Any = None
-
+    ref: Any = None
     # Scheduler
     scheduler: Any = None

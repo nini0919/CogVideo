@@ -5,34 +5,32 @@ export TOKENIZERS_PARALLELISM=false
 
 # Model Configuration
 MODEL_ARGS=(
-    --model_path "THUDM/CogVideoX1.5-5B-I2V"
-    --model_name "cogvideox1.5-i2v"  # ["cogvideox-i2v"]
+    --model_path "THUDM/CogVideoX-5b-I2V"
+    --model_name "cogvideox-i2v"  # ["cogvideox-t2v"]
     --model_type "i2v"
-    --training_type "sft"
+    --training_type "lora"
 )
 
 # Output Configuration
 OUTPUT_ARGS=(
-    --output_dir "/absolute/path/to/your/output_dir"
+    --output_dir "output/hug_i2v_sft"
     --report_to "tensorboard"
 )
 
 # Data Configuration
 DATA_ARGS=(
-    --data_root "/absolute/path/to/your/data_root"
+    --data_root "train_data/hug_debug"
     --caption_column "prompt.txt"
     --video_column "videos.txt"
-    # --image_column "images.txt"  # comment this line will use first frame of video as image conditioning
-    --train_resolution "81x768x1360"  # (frames x height x width), frames should be 8N+1 and height, width should be multiples of 16
+    --train_resolution "49x480x720"
 )
 
 # Training Configuration
 TRAIN_ARGS=(
-    --train_epochs 10 # number of training epochs
+    --train_epochs 1000 # number of training epochs
     --seed 42 # random seed
-
     #########   Please keep consistent with deepspeed config file ##########
-    --batch_size 1
+    --batch_size 2
     --gradient_accumulation_steps 1
     --mixed_precision "bf16"  # ["no", "fp16"] Only CogVideoX-2B supports fp16 training
     ########################################################################
@@ -40,23 +38,23 @@ TRAIN_ARGS=(
 
 # System Configuration
 SYSTEM_ARGS=(
-    --num_workers 8
+    --num_workers 4
     --pin_memory True
     --nccl_timeout 1800
 )
 
 # Checkpointing Configuration
 CHECKPOINT_ARGS=(
-    --checkpointing_steps 10 # save checkpoint every x steps
+    --checkpointing_steps 250 # save checkpoint every x steps
     --checkpointing_limit 2 # maximum number of checkpoints to keep, after which the oldest one is deleted
-    # --resume_from_checkpoint "/absolute/path/to/checkpoint_dir"  # if you want to resume from a checkpoint, otherwise, comment this line
+    --resume_from_checkpoint "ckpt"  # if you want to resume from a checkpoint, otherwise, comment this line
 )
 
 # Validation Configuration
 VALIDATION_ARGS=(
-    --do_validation false  # ["true", "false"]
-    --validation_dir "/absolute/path/to/validation_set"
-    --validation_steps 20  # should be multiple of checkpointing_steps
+    --do_validation true
+    --validation_dir "val_data/hug_debug"
+    --validation_steps 250
     --validation_prompts "prompts.txt"
     --validation_images "images.txt"
     --gen_fps 16
